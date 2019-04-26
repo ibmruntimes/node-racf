@@ -1,8 +1,8 @@
 {
   "targets": [
     {
-      "target_name": "vsam.js",
-      "sources": [ "vsam.cpp", "VsamFile.cpp" ]
+      "target_name": "racf",
+      "sources": [ "racf_interface.cpp", "racf.cpp" ]
     }
   ]
 }
