@@ -11,7 +11,7 @@ const expect = require('chai').expect;
 const should = require('chai').should;
 const assert = require('chai').assert;
 
-describe("Key Sequenced Dataset", function() {
+describe("RACF Validation", function() {
   it("check racf authenticate to be valid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD)).to.be.true;
     done();
