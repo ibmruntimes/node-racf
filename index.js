@@ -1,3 +1,3 @@
-var binding = require('bindings')('vsam.js.node')
+var binding = require('bindings')('racf.node')
 
 module.exports = binding
