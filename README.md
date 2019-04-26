@@ -1,4 +1,4 @@
-# vsam
+# RACF
 This NodeJS module enables you validate against RACF
 
 ## Installation
