@@ -9,7 +9,7 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 -->
 
 Before installing, [download and install Node.js](https://developer.ibm.com/node/sdk/ztp/).
-Node.js 6.11.4 or higher is required.
+Node.js 6.14 for z/OS or higher is required.
 
 ## Setup
 
@@ -33,10 +33,13 @@ npm install racf
 ```
 const racf = require("racf");
 
-try {
-	racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD);
-} catch(err) {
-	console.log.out(err);
+if (racf.isUserInGroup(process.env.RACF_TEST_ID, "DEV")) {
+	try {
+        var isSuccessful = racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD);
+        console.log(isSuccessful);
+	} catch(err) {
+		console.log.out(err);
+	}
 }
 ```
 

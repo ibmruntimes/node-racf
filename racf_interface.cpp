@@ -10,6 +10,8 @@
 #include <dynit.h>
 #include <sstream>
 #include <numeric>
+#include <sys/types.h>
+#include <grp.h>
 
 using v8::Context;
 using v8::Function;
@@ -74,4 +76,61 @@ void Racf::Authenticate(const FunctionCallbackInfo<Value>& args) {
 	return Nan::ThrowError(buffer);
   }
   args.GetReturnValue().Set(Boolean::New(isolate, true));
+}
+
+void Racf::isUserInGroup(const FunctionCallbackInfo<Value>& args) {
+  Isolate* isolate = args.GetIsolate();
+  if (args.Length() != 2) {
+    // Throw an Error that is passed back to JavaScript
+    isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Wrong number of arguments")));
+    return;
+  }
+
+  if (!args[0]->IsString()) {
+    isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "First argument must be a string")));
+    return;
+  }
+  if (!args[1]->IsString()) {
+    isolate->ThrowException(Exception::TypeError(
+        String::NewFromUtf8(isolate, "Second argument must be a string password")));
+    return;
+  }
+
+  std::string user (*v8::String::Utf8Value(args[0]->ToString()));
+  std::string group (*v8::String::Utf8Value(args[1]->ToString()));
+
+  // Convert strings from Ascii to Ebcdic for z/OS
+  transform(user.begin(), user.end(), user.begin(), [](char c) -> char {
+    __a2e_l(&c, 1);
+    return toupper(c);
+  });
+  transform(group.begin(), group.end(), group.begin(), [](char c) -> char {
+    __a2e_l(&c, 1);
+    return toupper(c);
+  });
+
+
+  struct group* grp;
+  char   **curr;
+  grp = getgrnam(group.c_str());
+
+  if (grp == 0) {
+    char buffer[256];
+	strerror_r(errno, buffer, 256);	
+	__e2a_s(buffer);
+	return Nan::ThrowError(buffer);
+  }
+
+  for (curr=grp->gr_mem; (*curr) != NULL; curr++) {
+//#pragma convert("IBM-1047")
+  //  printf("%s - %s\n", user.c_str(), *curr);
+//#pragma convert(pop)
+    if (strcmp(user.c_str(), *curr) == 0)  {
+        args.GetReturnValue().Set(Boolean::New(isolate, true));
+        return;
+    }
+  }
+  args.GetReturnValue().Set(Boolean::New(isolate, false));
 }

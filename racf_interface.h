@@ -16,6 +16,7 @@
 class Racf : public node::ObjectWrap {
  public:
   static void Authenticate(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void isUserInGroup(const v8::FunctionCallbackInfo<v8::Value>& args);
 
  private:
 };

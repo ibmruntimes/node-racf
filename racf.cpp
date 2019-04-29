@@ -16,6 +16,7 @@ using v8::Value;
 
 void InitAll(Local<Object> exports, Local<Object> module) {
   NODE_SET_METHOD(exports, "authenticate", Racf::Authenticate);
+  NODE_SET_METHOD(exports, "isUserInGroup", Racf::isUserInGroup);
 }
 
 NODE_MODULE(racf, InitAll)
