@@ -41,17 +41,19 @@ void Racf::Authenticate(const FunctionCallbackInfo<Value>& args) {
 
   if (!args[0]->IsString()) {
     isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong arguments")));
+        String::NewFromUtf8(isolate, "First argument must be a string")));
     return;
   }
   if (!args[1]->IsString()) {
     isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong arguments")));
+        String::NewFromUtf8(isolate, "Second argument must be a string password")));
     return;
   }
 
   std::string username (*v8::String::Utf8Value(args[0]->ToString()));
   std::string password (*v8::String::Utf8Value(args[1]->ToString()));
+
+  // Convert strings from Ascii to Ebcdic for z/OS
   transform(username.begin(), username.end(), username.begin(), [](char c) -> char {
     __a2e_l(&c, 1);
     return c;
@@ -61,10 +63,15 @@ void Racf::Authenticate(const FunctionCallbackInfo<Value>& args) {
     return c;
   });
 
+
+  // Authenticate via __passwd interface
   int value = __passwd(username.c_str(), password.c_str(), 0);
 
   if (value != 0) {
-	perror("RACF");	
+    char buffer[256];
+	strerror_r(errno, buffer, 256);	
+	__e2a_s(buffer);
+	return Nan::ThrowError(buffer);
   }
-  args.GetReturnValue().Set(Boolean::New(isolate, value == 0));
+  args.GetReturnValue().Set(Boolean::New(isolate, true));
 }

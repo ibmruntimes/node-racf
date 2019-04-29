@@ -11,6 +11,7 @@
 #include <node_object_wrap.h>
 #include <uv.h>
 #include <string>
+#include <nan.h>
 
 class Racf : public node::ObjectWrap {
  public:
