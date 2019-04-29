@@ -19,7 +19,8 @@ In order to use this module, you must Set the Program Control bit on Node and it
 extattr +p
 ```
 
-A convenience script, setup.sh can do this for you automatically if you set the $NODE_INSTALL_DIR environment variable.
+A convenience script, `setup.sh` can do this for you automatically if you set the $NODE_INSTALL_DIR environment variable
+to point to the root NodeJS install directory.
 
 ## Simple to use
 
@@ -29,6 +30,7 @@ npm install racf
 
 ### Use
 
+```
 const racf = require("racf");
 
 try {
@@ -36,3 +38,5 @@ try {
 } catch(err) {
 	console.log.out(err);
 }
+```
+
