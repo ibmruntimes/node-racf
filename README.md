@@ -15,26 +15,29 @@ Node.js 6.14 for z/OS or higher is required.
 
 In order to use this module, you must Set the Program Control bit on Node and its dependent DLLs.
 
-```
+```bash
 extattr +p
 ```
 
-A convenience script, `setup.sh` can do this for you automatically if you set the $NODE_INSTALL_DIR environment variable
-to point to the root NodeJS install directory.
+A convenience script, `setup.sh` can do this for you automatically
 
 ## Simple to use
 
 ### Install
 
+```bash
 npm install racf
+```
 
 ### Use
 
-```
+```js
 const racf = require("racf");
 
+// Check if user belongs to a group
 if (racf.isUserInGroup(process.env.RACF_TEST_ID, "DEV")) {
 	try {
+		// Authenticate user and password against RACF
         var isSuccessful = racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD);
         console.log(isSuccessful);
 	} catch(err) {
