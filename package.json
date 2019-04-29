@@ -1,9 +1,9 @@
 {
   "name": "racf",
-  "version": "0.0.1",
+  "version": "0.2",
   "description": "Authenticate via RACF passwd interface on z/OS",
   "main": "index.js",
-  "repository": "ibmruntimes/racf",
+  "repository": "IgorTodorovskiIBM/RACF",
   "keywords": [
     "z/OS",
     "racf"
