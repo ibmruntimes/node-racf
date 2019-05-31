@@ -1,6 +1,6 @@
 /*
  * Licensed Materials - Property of IBM
- * (C) Copyright IBM Corp. 2017. All Rights Reserved.
+ * (C) Copyright IBM Corp. 2019. All Rights Reserved.
  * US Government Users Restricted Rights - Use, duplication or disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 */
 
@@ -65,13 +65,14 @@ void Racf::Authenticate(const FunctionCallbackInfo<Value>& args) {
     return c;
   });
 
-
   // Authenticate via __passwd interface
   int value = __passwd(username.c_str(), password.c_str(), 0);
 
   if (value != 0) {
-    char buffer[256];
-	strerror_r(errno, buffer, 256);	
+    if (errno == EACCES) 
+        return args.GetReturnValue().Set(Boolean::New(isolate, false));
+    char buffer[1024];
+	strerror_r(errno, buffer, 1024);	
 	__e2a_s(buffer);
 	return Nan::ThrowError(buffer);
   }
@@ -111,22 +112,16 @@ void Racf::isUserInGroup(const FunctionCallbackInfo<Value>& args) {
     return toupper(c);
   });
 
-
   struct group* grp;
   char   **curr;
   grp = getgrnam(group.c_str());
 
   if (grp == 0) {
-    char buffer[256];
-	strerror_r(errno, buffer, 256);	
-	__e2a_s(buffer);
-	return Nan::ThrowError(buffer);
+    args.GetReturnValue().Set(Boolean::New(isolate, false));
+    return;
   }
 
   for (curr=grp->gr_mem; (*curr) != NULL; curr++) {
-//#pragma convert("IBM-1047")
-  //  printf("%s - %s\n", user.c_str(), *curr);
-//#pragma convert(pop)
     if (strcmp(user.c_str(), *curr) == 0)  {
         args.GetReturnValue().Set(Boolean::New(isolate, true));
         return;

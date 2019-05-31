@@ -12,13 +12,23 @@ const should = require('chai').should;
 const assert = require('chai').assert;
 
 describe("RACF Validation", function() {
-  it("check racf authenticate to be valid", function(done) {
+  it("check racf authentication to be valid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD)).to.be.true;
     done();
   });
 
-  it("check racf authenticate to be invalid", function(done) {
+  it("check racf authentication to be invalid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, "BADPASSWORD")).to.be.false;
     done();
   });
+  it("check if user does not belong to group", function(done) {
+    expect(racf.isUserInGroup(process.env.RACF_TEST_ID, process.env.RACF_TEST_NOTINGROUP)).to.be.false;
+    done();
+  });
+
+  it("check if user belong to group", function(done) {
+    expect(racf.isUserInGroup(process.env.RACF_TEST_ID, process.env.RACF_TEST_INGROUP)).to.be.true;
+    done();
+  });
+
 });

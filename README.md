@@ -1,5 +1,5 @@
 # RACF
-This NodeJS module enables you validate against RACF
+This NodeJS module enables your application to validate against RACF
 
 ## Installation
 
@@ -13,13 +13,17 @@ Node.js 6.14 for z/OS or higher is required.
 
 ## Setup
 
-In order to use this module, you must Set the Program Control bit on Node and its dependent DLLs.
+In order to use this module, you must set the Program Control bit on Node and its dependent DLLs.
 
 ```bash
 extattr +p
 ```
 
 A convenience script, `setup.sh` can do this for you automatically
+
+```bash
+./setup.sh
+```
 
 ## Simple to use
 
@@ -35,10 +39,10 @@ npm install racf
 const racf = require("racf");
 
 // Check if user belongs to a group
-if (racf.isUserInGroup(process.env.RACF_TEST_ID, "DEV")) {
+if (racf.isUserInGroup("myuserid", "DEV")) {
 	try {
 		// Authenticate user and password against RACF
-        var isSuccessful = racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD);
+        var isSuccessful = racf.authenticate("myuserid", "mypassword");
         console.log(isSuccessful);
 	} catch(err) {
 		console.log.out(err);
@@ -46,3 +50,8 @@ if (racf.isUserInGroup(process.env.RACF_TEST_ID, "DEV")) {
 }
 ```
 
+### Use
+Prior to running the tests, make sure to set the RACF_TEST_ID, RACF_TEST_PASSWORD, RACF_TEST_INGROUP and RACF_TEST_NOTINGROUP environment variables.
+```bash
+RACF_TEST_ID="MYUSERID" RACF_TEST_PASSWORD="MYPASSWORD" RACF_TEST_INGROUP="DEV_REALGROUP" RACF_TEST_NOTINGROUP="DEVFAKEGROUP" npm test
+```
