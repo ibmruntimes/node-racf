@@ -50,8 +50,10 @@ if (racf.isUserInGroup("myuserid", "DEV")) {
 }
 ```
 
-### Use
+### Test
 Prior to running the tests, make sure to set the RACF_TEST_ID, RACF_TEST_PASSWORD, RACF_TEST_INGROUP and RACF_TEST_NOTINGROUP environment variables.
+
+Run the tests:
 ```bash
 RACF_TEST_ID="MYUSERID" RACF_TEST_PASSWORD="MYPASSWORD" RACF_TEST_INGROUP="DEV_REALGROUP" RACF_TEST_NOTINGROUP="DEVFAKEGROUP" npm test
 ```
