@@ -38,15 +38,11 @@ npm install racf
 ```js
 const racf = require("racf");
 
-// Check if user belongs to a group
+// Check if user belongs to a RACF group
 if (racf.isUserInGroup("myuserid", "DEV")) {
-	try {
-		// Authenticate user and password against RACF
-        var isSuccessful = racf.authenticate("myuserid", "mypassword");
-        console.log(isSuccessful);
-	} catch(err) {
-		console.log.out(err);
-	}
+  // Authenticate user and password against RACF
+  var isSuccessful = racf.authenticate("myuserid", "mypassword");
+  console.log(isSuccessful);
 }
 ```
 
