@@ -13,13 +13,13 @@ Node.js 6.14 for z/OS or higher is required.
 
 ## Setup
 
-In order to use this module, you must set the Program Control bit on Node and its dependent DLLs.
+In order to use this module, you must set the Program Control bit on Node and its dependent DLLs using the following command:
 
 ```bash
-extattr +p
+extattr +p <file>
 ```
 
-A convenience script, `setup.sh` can do this for you automatically
+A convenience script, `setup.sh`, is provided and can do this for you automatically
 
 ```bash
 ./setup.sh
@@ -39,7 +39,7 @@ npm install racf
 const racf = require("racf");
 
 // Check if user belongs to a RACF group
-if (racf.isUserInGroup("myuserid", "DEV")) {
+if (racf.isUserInGroup("myuserid", "GROUP")) {
   // Authenticate user and password against RACF
   var isSuccessful = racf.authenticate("myuserid", "mypassword");
   console.log(isSuccessful);
@@ -53,3 +53,10 @@ Run the tests:
 ```bash
 RACF_TEST_ID="MYUSERID" RACF_TEST_PASSWORD="MYPASSWORD" RACF_TEST_INGROUP="DEV_REALGROUP" RACF_TEST_NOTINGROUP="DEVFAKEGROUP" npm test
 ```
+
+### Troubleshooting
+When running the `setup.sh` scripr or the `extattr` command, you may receive the following error:
+```
+chattr() error: rv=-1, errno=8B, rsn=0924041B
+```
+This indicates that may not have READ access to the BPX.FILEATTR.PROGCTL resource in the FACILITY class.  Provide access to your userid or contact your system administrator.
