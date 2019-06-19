@@ -4,7 +4,7 @@
 **IBM SDK for Node.js - z/OS®** is a Javascript runtime that provides a secure, module-driven, highly scalable approach to accelerate digital transformation on IBM Z.
 
 
-This tutorial will demonstrate how to create a form-based authentication using the [RACF](https://www.npmjs.com/package/racf) npm module and Passport [Passport](https://www.npmjs.com/package/passport) npm module.
+This tutorial will demonstrate how to create a form-based authentication using the [RACF](https://www.npmjs.com/package/racf) npm module and [Passport](https://www.npmjs.com/package/passport) npm module.
 
 
 ## Prerequisites
@@ -294,7 +294,7 @@ The source code begins by importing the dependency modules.  The RACF authentic
 
 
 The next step is to create an html file, which will be used to display the form.  Name the file `form.html`, and copy and paste the following contents to it:
-```
+```html
 <form action="/login" method="post">
     <div>
         <label>Username:</label>
