@@ -11,6 +11,6 @@ if (racf.isUserInGroup(process.env.RACF_TEST_ID, "CDEV")) {
 		var isSuccessful = racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD);
 		console.log(isSuccessful);
     } catch(err) {
-        console.log.out(err);
+        console.log(err);
     }
 }

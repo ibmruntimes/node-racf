@@ -1,3 +1,2 @@
-var binding = require('bindings')('racf.node')
-
-module.exports = binding
+const zrexx = require('./build/Release/racf.node');
+module.exports = racf;

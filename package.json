@@ -1,7 +1,7 @@
 {
   "name": "racf",
-  "version": "0.1.1",
-  "description": "Authenticate via RACF on z/OS",
+  "version": "1.0.0",
+  "description": "RACF authentication npm for z/OS",
   "main": "index.js",
   "repository": "ibmruntimes/node-racf",
   "keywords": [
@@ -10,19 +10,17 @@
   ],
   "author": "Igor Todorovski",
   "license": "Apache-2.0",
-  "dependencies": {
-    "bindings": "1.2.x",
-    "nan": "^2.13.2",
-    "node-gyp": "^3.6.0"
-  },
   "devDependencies": {
     "async": "^1.5.0",
-    "mocha": "^4.0.1",
-    "chai": "^4.1.2"
+    "chai": "^4.1.2",
+    "mocha": "^4.1.0"
   },
   "scripts": {
     "build": "node-gyp build",
     "test": "./setup.sh && ./node_modules/.bin/mocha -b -t 40000 --reporter spec"
   },
-  "gypfile": true
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "^1.7.1"
+  }
 }

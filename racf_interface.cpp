@@ -12,120 +12,80 @@
 #include <numeric>
 #include <sys/types.h>
 #include <grp.h>
+#include <pwd.h>
 
-using v8::Context;
-using v8::Function;
-using v8::FunctionCallbackInfo;
-using v8::FunctionTemplate;
-using v8::Isolate;
-using v8::Local;
-using v8::Number;
-using v8::Object;
-using v8::Persistent;
-using v8::String;
-using v8::Value;
-using v8::Exception;
-using v8::HandleScope;
-using v8::Handle;
-using v8::Array;
-using v8::Integer;
-using v8::Boolean;
-using v8::MaybeLocal;
-
-void Racf::Authenticate(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = args.GetIsolate();
-  if (args.Length() != 2) {
-    // Throw an Error that is passed back to JavaScript
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
+Napi::Boolean Racf::authenticate(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  if (info.Length() != 2) {
+    Napi::Error::New(env, "Wrong number of arguments passed to authenticate")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
 
-  if (!args[0]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "First argument must be a string")));
-    return;
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "First argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
-  if (!args[1]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Second argument must be a string password")));
-    return;
+  if (!info[1].IsString()) {
+    Napi::TypeError::New(env, "Second argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
 
-  std::string username (*v8::String::Utf8Value(args[0]->ToString()));
-  std::string password (*v8::String::Utf8Value(args[1]->ToString()));
-
-  // Convert strings from Ascii to Ebcdic for z/OS
-  transform(username.begin(), username.end(), username.begin(), [](char c) -> char {
-    __a2e_l(&c, 1);
-    return c;
-  });
-  transform(password.begin(), password.end(), password.begin(), [](char c) -> char {
-    __a2e_l(&c, 1);
-    return c;
-  });
+  std::string username (static_cast<std::string>(info[0].As<Napi::String>()));
+  std::string password (static_cast<std::string>(info[1].As<Napi::String>()));
 
   // Authenticate via __passwd interface
   int value = __passwd(username.c_str(), password.c_str(), 0);
 
   if (value != 0) {
-    if (errno == EACCES) 
-        return args.GetReturnValue().Set(Boolean::New(isolate, false));
+    if (errno == EACCES)  {
+       return Napi::Boolean::New(env, false);
+    }
     char buffer[1024];
 	strerror_r(errno, buffer, 1024);	
-	__e2a_s(buffer);
-	return Nan::ThrowError(buffer);
+    Napi::TypeError::New(env, buffer)
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
-  args.GetReturnValue().Set(Boolean::New(isolate, true));
+  return Napi::Boolean::New(env, true);
 }
 
-void Racf::isUserInGroup(const FunctionCallbackInfo<Value>& args) {
-  Isolate* isolate = args.GetIsolate();
-  if (args.Length() != 2) {
-    // Throw an Error that is passed back to JavaScript
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Wrong number of arguments")));
-    return;
+Napi::Boolean Racf::isUserInGroup(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  if (info.Length() != 2) {
+    Napi::Error::New(env, "Wrong number of arguments passed to authenticate")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
 
-  if (!args[0]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "First argument must be a string")));
-    return;
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "First argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
-  if (!args[1]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "Second argument must be a string password")));
-    return;
+  if (!info[1].IsString()) {
+    Napi::TypeError::New(env, "Second argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
   }
 
-  std::string user (*v8::String::Utf8Value(args[0]->ToString()));
-  std::string group (*v8::String::Utf8Value(args[1]->ToString()));
-
-  // Convert strings from Ascii to Ebcdic for z/OS
-  transform(user.begin(), user.end(), user.begin(), [](char c) -> char {
-    __a2e_l(&c, 1);
-    return toupper(c);
-  });
-  transform(group.begin(), group.end(), group.begin(), [](char c) -> char {
-    __a2e_l(&c, 1);
-    return toupper(c);
-  });
+  std::string user (static_cast<std::string>(info[0].As<Napi::String>()));
+  std::string group (static_cast<std::string>(info[1].As<Napi::String>()));
 
   struct group* grp;
   char   **curr;
   grp = getgrnam(group.c_str());
 
   if (grp == 0) {
-    args.GetReturnValue().Set(Boolean::New(isolate, false));
-    return;
+    return Napi::Boolean::New(env, false);
   }
 
   for (curr=grp->gr_mem; (*curr) != NULL; curr++) {
     if (strcmp(user.c_str(), *curr) == 0)  {
-        args.GetReturnValue().Set(Boolean::New(isolate, true));
-        return;
+        return Napi::Boolean::New(env, true);
     }
   }
-  args.GetReturnValue().Set(Boolean::New(isolate, false));
+  return Napi::Boolean::New(env, false);
 }

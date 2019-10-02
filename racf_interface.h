@@ -7,16 +7,13 @@
 #ifndef RACF_H
 #define RACF_H
 
-#include <node.h>
-#include <node_object_wrap.h>
-#include <uv.h>
+#include <napi.h>
 #include <string>
-#include <nan.h>
 
-class Racf : public node::ObjectWrap {
+class Racf : public Napi::ObjectWrap<Racf> {
  public:
-  static void Authenticate(const v8::FunctionCallbackInfo<v8::Value>& args);
-  static void isUserInGroup(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static Napi::Boolean authenticate(const Napi::CallbackInfo &info);
+  static Napi::Boolean isUserInGroup(const Napi::CallbackInfo &info);
 
  private:
 };
