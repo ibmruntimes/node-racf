@@ -1,6 +1,6 @@
 {
   "name": "racf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "RACF authentication npm for z/OS",
   "main": "index.js",
   "repository": "ibmruntimes/node-racf",
