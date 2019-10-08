@@ -74,6 +74,14 @@ Napi::Boolean Racf::isUserInGroup(const Napi::CallbackInfo &info) {
   std::string user (static_cast<std::string>(info[0].As<Napi::String>()));
   std::string group (static_cast<std::string>(info[1].As<Napi::String>()));
 
+  // Uppercase user and group
+  transform(user.begin(), user.end(), user.begin(), [](char c) -> char {
+    return toupper(c);
+  });
+  transform(group.begin(), group.end(), group.begin(), [](char c) -> char {
+    return toupper(c);
+  });
+
   struct group* grp;
   char   **curr;
   grp = getgrnam(group.c_str());
