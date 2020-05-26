@@ -1,11 +1,13 @@
 {
   "name": "racf",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "RACF authentication npm for z/OS",
   "main": "index.js",
   "repository": "ibmruntimes/node-racf",
   "keywords": [
     "z/OS",
+    "ZOS",
+    "authentication",
     "racf"
   ],
   "author": "Igor Todorovski",
