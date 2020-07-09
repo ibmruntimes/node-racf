@@ -9,9 +9,12 @@ set -x
 
 find . -name "racf.node" -exec extattr +p  {} \;
 
-if [ -e "$NODE_INSTALL_DIR/lib/libnode.so" ]; then
-	extattr +p "$NODE_INSTALL_DIR/lib/libnode.so"
+for l in `ls $NODE_INSTALL_DIR/lib/libnode*.so`; do
+if [ -e $l ]; then
+	extattr +p $l
 fi
+done
+
 if [ -e "$NODE_INSTALL_DIR/bin/node" ]; then
 	extattr +p "$NODE_INSTALL_DIR/bin/node"
 fi
