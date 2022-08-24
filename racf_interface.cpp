@@ -10,7 +10,9 @@
 #include <dynit.h>
 #include <sstream>
 #include <numeric>
+#include <algorithm>
 #include <sys/types.h>
+#include <sys/ps.h>
 #include <grp.h>
 #include <pwd.h>
 
@@ -75,11 +77,11 @@ Napi::Boolean Racf::isUserInGroup(const Napi::CallbackInfo &info) {
   std::string group (static_cast<std::string>(info[1].As<Napi::String>()));
 
   // Uppercase user and group
-  transform(user.begin(), user.end(), user.begin(), [](char c) -> char {
-    return toupper(c);
+  std::for_each(user.begin(), user.end(), [](char & c){
+      c = ::toupper(c);
   });
-  transform(group.begin(), group.end(), group.begin(), [](char c) -> char {
-    return toupper(c);
+  std::for_each(group.begin(), group.end(), [](char & c){
+      c = ::toupper(c);
   });
 
   struct group* grp;
@@ -96,4 +98,113 @@ Napi::Boolean Racf::isUserInGroup(const Napi::CallbackInfo &info) {
     }
   }
   return Napi::Boolean::New(env, false);
+}
+
+Napi::Boolean Racf::changePassword(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  if (info.Length() != 3) {
+    Napi::Error::New(env, "Wrong number of arguments passed to authenticate")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "First argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  if (!info[1].IsString()) {
+    Napi::TypeError::New(env, "Second argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  if (!info[2].IsString()) {
+    Napi::TypeError::New(env, "Third argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  std::string username (static_cast<std::string>(info[0].As<Napi::String>()));
+  std::string old_password (static_cast<std::string>(info[1].As<Napi::String>()));
+  std::string new_password (static_cast<std::string>(info[2].As<Napi::String>()));
+
+  // Change password via __passwd interface
+  int value = __passwd(username.c_str(), old_password.c_str(), new_password.c_str());
+
+  if (value != 0) {
+    if (errno == EACCES)  {
+       return Napi::Boolean::New(env, false);
+    }
+    char buffer[1024];
+	  strerror_r(errno, buffer, 1024);	
+    Napi::TypeError::New(env, buffer)
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  return Napi::Boolean::New(env, true);
+}
+
+Napi::String Racf::getUserName(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+
+  char buffer[1024];
+  int rc = __getuserid(buffer, 1024);
+  return Napi::String::New(env, std::string(buffer));
+}
+
+Napi::Boolean Racf::checkPermission(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+  if (info.Length() != 4) {
+    Napi::Error::New(env, "Wrong number of arguments passed to authenticate")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "First argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  if (!info[1].IsString()) {
+    Napi::TypeError::New(env, "Second argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  if (!info[2].IsString()) {
+    Napi::TypeError::New(env, "Third argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  if (!info[3].IsString()) {
+    Napi::TypeError::New(env, "Fourth argument must be a string")
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+
+  std::string userName (static_cast<std::string>(info[0].As<Napi::String>()));
+  std::string className (static_cast<std::string>(info[1].As<Napi::String>()));
+  std::string entityName (static_cast<std::string>(info[2].As<Napi::String>()));
+  std::string accessLevel (static_cast<std::string>(info[3].As<Napi::String>()));
+
+  // Change password via __passwd interface
+  int access_type = __READ_RESOURCE;
+  if (accessLevel == "READ")
+    access_type = __READ_RESOURCE;
+  else if (accessLevel == "UPDATE")
+    access_type = __UPDATE_RESOURCE;
+  else if (accessLevel == "UPDATE")
+    access_type = __CONTROL_RESOURCE;
+  else if (accessLevel == "UPDATE")
+    access_type = __ALTER_RESOURCE;
+
+  int value = __check_resource_auth_np(0, 0, (char*)userName.c_str(), (char*)accessLevel.c_str(), (char*)entityName.c_str(), access_type);
+
+  if (value != 0) {
+    char buffer[1024];
+	  strerror_r(errno, buffer, 1024);	
+    Napi::TypeError::New(env, buffer)
+        .ThrowAsJavaScriptException();
+    return Napi::Boolean::New(env, false);
+  }
+  return Napi::Boolean::New(env, true);
 }

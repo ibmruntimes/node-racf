@@ -12,11 +12,6 @@ const should = require('chai').should;
 const assert = require('chai').assert;
 
 describe("RACF Validation", function() {
-  it("check racf authentication to be valid", function(done) {
-    expect(racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD)).to.be.true;
-    done();
-  });
-
   it("check racf authentication to be invalid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, "BADPASSWORD")).to.be.false;
     done();
@@ -30,5 +25,14 @@ describe("RACF Validation", function() {
     expect(racf.isUserInGroup(process.env.RACF_TEST_ID, process.env.RACF_TEST_INGROUP)).to.be.true;
     done();
   });
+  it("check if user has access to dataset", function(done) {
+    expect(racf.checkPermission(process.env.RACF_TEST_ID, process.env.RACF_TEST_INGROUP)).to.be.true;
+    done();
+  });
+/*  it("check racf authentication to be valid", function(done) {
+    expect(racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD)).to.be.true;
+    done();
+  });*/
+
 
 });

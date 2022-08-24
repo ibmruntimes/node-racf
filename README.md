@@ -1,5 +1,5 @@
 # RACF
-This NodeJS module enables your application to validate against RACF
+This NodeJS module enables your application to validate against SAF/RACF
 
 ## Installation
 
@@ -8,8 +8,8 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [npm registry](https://www.npmjs.com/).
 -->
 
-Before installing, [download and install Node.js](https://developer.ibm.com/node/sdk/ztp/).
-Node.js 8.16 for z/OS or higher is required.
+Before installing, [download and install Node.js](https://www.ibm.com/products/sdk-nodejs-compiler-zos)
+Node.js v14 for z/OS or higher is required.
 
 ## Setup
 
@@ -22,7 +22,7 @@ extattr +p <file>
 A convenience script, `setup.sh`, is provided and can do this for you automatically
 
 ```bash
-./setup.sh
+. ./setup.sh
 ```
 
 ## Simple to use

@@ -14,6 +14,9 @@ class Racf : public Napi::ObjectWrap<Racf> {
  public:
   static Napi::Boolean authenticate(const Napi::CallbackInfo &info);
   static Napi::Boolean isUserInGroup(const Napi::CallbackInfo &info);
+  static Napi::Boolean changePassword(const Napi::CallbackInfo &info);
+  static Napi::Boolean checkPermission(const Napi::CallbackInfo &info);
+  static Napi::String getUserName(const Napi::CallbackInfo &info);
 
  private:
 };

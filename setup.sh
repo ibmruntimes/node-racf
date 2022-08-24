@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env bash
 # This script will set Node to be program controlled in order to access RACF
 
 if [ -z $NODE_INSTALL_DIR ]; then
@@ -18,6 +18,20 @@ done
 if [ -e "$NODE_INSTALL_DIR/bin/node" ]; then
 	extattr +p "$NODE_INSTALL_DIR/bin/node"
 fi
-if [ -e CXXRT64 ]; then
-	extattr +p CXXRT64
+
+
+if [ -z "$NODE_RUNTIME" ]; then
+  NODE_RUNTIME="$(echo $STEPLIB | tr : '\n' | grep WOZDEV | head -1)"
+  if [ -z "$NODE_RUNTIME" ]; then
+    exit 0;
+  fi
+fi
+/bin/tsocmd "listcat ENT('$NODE_RUNTIME')" >/dev/null 2>/dev/null
+export STEPLIB=
+export LIBPATH=".:$LIBPATH"
+rc=$?
+if [ $rc -eq 0 ]; then
+  cp "//'$NODE_RUNTIME'" .
+  for file in crt* ; do mv -- "$file" "$(echo "$file" | awk '{print toupper($0)}')"; done
+  extattr +p CRT*
 fi

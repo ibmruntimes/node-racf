@@ -1,6 +1,6 @@
 {
   "name": "racf",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "RACF authentication npm for z/OS",
   "main": "index.js",
   "repository": "ibmruntimes/node-racf",
@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "node-gyp build",
-    "test": "./setup.sh && ./node_modules/.bin/mocha -b -t 40000 --reporter spec"
+    "test": ". ./setup.sh && ./node_modules/.bin/mocha -b -t 40000 --reporter spec"
   },
   "gypfile": true,
   "dependencies": {
