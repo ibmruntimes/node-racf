@@ -1,5 +1,5 @@
 # RACF
-This NodeJS module enables your application to validate against RACF
+This NodeJS module enables your application to validate against SAF/RACF
 
 ## Installation
 
@@ -8,8 +8,8 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 [npm registry](https://www.npmjs.com/).
 -->
 
-Before installing, [download and install Node.js](https://developer.ibm.com/node/sdk/ztp/).
-Node.js 8.16 for z/OS or higher is required.
+Before installing, [download and install Node.js](https://www.ibm.com/products/sdk-nodejs-compiler-zos)
+IBM SDK for Node.js - z/OS 14.0 or IBM Open Enterprise SDK for Node.js 16 or higher is required.
 
 ## Setup
 
@@ -22,7 +22,7 @@ extattr +p <file>
 A convenience script, `setup.sh`, is provided and can do this for you automatically
 
 ```bash
-./setup.sh
+. ./setup.sh
 ```
 
 ## Simple to use
@@ -44,6 +44,13 @@ if (racf.isUserInGroup("myuserid", "GROUP")) {
   var isSuccessful = racf.authenticate("myuserid", "mypassword");
   console.log(isSuccessful);
 }
+
+// Get the user name with getUserName
+console.log(racf.getUserName())
+
+// Check Permissions to a resource class
+// Read access to the BPX.SERVER resource in the FACILITY class is required for this function
+let hasResource = racf.checkPermission(racf.getUserName(), "FACILITY", "BPX.SERVER", "READ");
 ```
 
 ### Test
