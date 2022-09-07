@@ -12,6 +12,10 @@ const should = require('chai').should;
 const assert = require('chai').assert;
 
 describe("RACF Validation", function() {
+  it("check racf username", function(done) {
+    expect(racf.getUserName() == process.env.USER).to.be.true;
+    done();
+  });
   it("check racf authentication to be invalid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, "BADPASSWORD")).to.be.false;
     done();
@@ -29,10 +33,13 @@ describe("RACF Validation", function() {
     expect(racf.checkPermission(process.env.RACF_TEST_ID, process.env.RACF_TEST_INGROUP)).to.be.true;
     done();
   });
-/*  it("check racf authentication to be valid", function(done) {
+  it("check racf authentication to be valid", function(done) {
     expect(racf.authenticate(process.env.RACF_TEST_ID, process.env.RACF_TEST_PASSWORD)).to.be.true;
     done();
-  });*/
-
-
+  });
+  it("check permissions", function(done) {
+    //TODO: requires extra permissions to test
+    //expect(racf.checkPermissions(...)).to.be.true;
+    done();
+  });
 });

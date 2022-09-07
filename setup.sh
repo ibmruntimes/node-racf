@@ -26,9 +26,9 @@ if [ -z "$NODE_RUNTIME" ]; then
     exit 0;
   fi
 fi
-/bin/tsocmd "listcat ENT('$NODE_RUNTIME')" >/dev/null 2>/dev/null
 export STEPLIB=
 export LIBPATH=".:$LIBPATH"
+/bin/tsocmd "listcat ENT('$NODE_RUNTIME')" >/dev/null 2>/dev/null
 rc=$?
 if [ $rc -eq 0 ]; then
   cp "//'$NODE_RUNTIME'" .

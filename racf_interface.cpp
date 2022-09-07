@@ -5,16 +5,18 @@
 */
 
 #include "racf_interface.h"
-#include <node_buffer.h>
-#include <unistd.h>
-#include <dynit.h>
-#include <sstream>
-#include <numeric>
+
 #include <algorithm>
-#include <sys/types.h>
-#include <sys/ps.h>
-#include <grp.h>
+#include <dynit.h>
+#include <node_buffer.h>
+#include <numeric>
 #include <pwd.h>
+#include <sstream>
+#include <sys/ps.h>
+#include <sys/types.h>
+#include <unistd.h>
+// Needs to go at the end due to naming collision
+#include <grp.h>
 
 Napi::Boolean Racf::authenticate(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
@@ -46,7 +48,7 @@ Napi::Boolean Racf::authenticate(const Napi::CallbackInfo &info) {
        return Napi::Boolean::New(env, false);
     }
     char buffer[1024];
-	strerror_r(errno, buffer, 1024);	
+	  strerror_r(errno, buffer, 1024);	
     Napi::TypeError::New(env, buffer)
         .ThrowAsJavaScriptException();
     return Napi::Boolean::New(env, false);
@@ -149,6 +151,14 @@ Napi::String Racf::getUserName(const Napi::CallbackInfo &info) {
 
   char buffer[1024];
   int rc = __getuserid(buffer, 1024);
+  
+  if (rc < 0) {
+	  strerror_r(errno, buffer, 1024);	
+    Napi::TypeError::New(env, buffer)
+        .ThrowAsJavaScriptException();
+    return Napi::String::New(env, std::string(""));
+   }
+  __e2a_s(buffer);
   return Napi::String::New(env, std::string(buffer));
 }
 
@@ -192,9 +202,9 @@ Napi::Boolean Racf::checkPermission(const Napi::CallbackInfo &info) {
     access_type = __READ_RESOURCE;
   else if (accessLevel == "UPDATE")
     access_type = __UPDATE_RESOURCE;
-  else if (accessLevel == "UPDATE")
+  else if (accessLevel == "CONTROL")
     access_type = __CONTROL_RESOURCE;
-  else if (accessLevel == "UPDATE")
+  else if (accessLevel == "ALTER")
     access_type = __ALTER_RESOURCE;
 
   int value = __check_resource_auth_np(0, 0, (char*)userName.c_str(), (char*)accessLevel.c_str(), (char*)entityName.c_str(), access_type);

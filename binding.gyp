@@ -1,7 +1,7 @@
 {
-  "variables": {
-      "NODE_VERSION%":"<!(node -p \"process.versions.node.split(\\\".\\\")[0]\")"
-  },
+   "variables": {
+       "NODE_VERSION%":"<!(node -p \"process.versions.node.split(\\\".\\\")[0]\")"
+   },
   "targets": [
     {
       "target_name": "racf",

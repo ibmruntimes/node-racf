@@ -9,7 +9,7 @@ This is a [Node.js](https://nodejs.org/en/) module available through the
 -->
 
 Before installing, [download and install Node.js](https://www.ibm.com/products/sdk-nodejs-compiler-zos)
-Node.js v14 for z/OS or higher is required.
+IBM SDK for Node.js - z/OS 14.0 or IBM Open Enterprise SDK for Node.js 16 or higher is required.
 
 ## Setup
 
@@ -44,6 +44,13 @@ if (racf.isUserInGroup("myuserid", "GROUP")) {
   var isSuccessful = racf.authenticate("myuserid", "mypassword");
   console.log(isSuccessful);
 }
+
+// Get the user name with getUserName
+console.log(racf.getUserName())
+
+// Check Permissions to a resource class
+// Read access to the BPX.SERVER resource in the FACILITY class is required for this function
+let hasResource = racf.checkPermission(racf.getUserName(), "FACILITY", "BPX.SERVER", "READ");
 ```
 
 ### Test
