@@ -25,6 +25,8 @@ A convenience script, `setup.sh`, is provided and can do this for you automatica
 . ./setup.sh
 ```
 
+You also need to unset existing `$STEPLIB` to avoid CELQDCPP including any uncontrolled libraries to the BPX environment.
+
 ## Simple to use
 
 ### Install
